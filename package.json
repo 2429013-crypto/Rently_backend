@@ -4,22 +4,31 @@
   "description": "",
   "main": "index.js",
   "scripts": {
- "start": "node src/server.js",
-  "dev": "nodemon src/server.js"
- },
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs", 
+  "type": "commonjs",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.24.4",
+    "nodemailer": "^10.0.10",
+    "sequelize": "^6.37.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
-  }
-}    
-
-
-
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2429013-crypto/Rently_backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/2429013-crypto/Rently_backend/issues"
+  },
+  "homepage": "https://github.com/2429013-crypto/Rently_backend#readme"
+}
