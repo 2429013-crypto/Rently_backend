@@ -3,14 +3,16 @@ const cors = require("cors");
 require("dotenv").config();
 
 const sequelize = require("./config/db"); 
-const User = require("./models/User");                                    
-const EmailVerification = require("./models/EmailVerification");          
+const User = require("./models/User");                                     
+const EmailVerification = require("./models/EmailVerification"); 
+const { testEmailConnection } = require("./services/emailService");   
+const authRoutes = require("./routes/authRoutes");          
 
 const app = express();                                          
 
 app.use(cors());
-app.use(express.json()); 
-
+app.use(express.json());  
+app.use("/api/auth", authRoutes);  
 app.get("/", (req, res) => {
     res.json({
         message: "Rently backend is running successfully!"
@@ -24,7 +26,8 @@ async function startServer() {
         await sequelize.authenticate();
 
         console.log("✅ MySQL database connected successfully!");     
-        await sequelize.sync();
+        await testEmailConnection(); 
+        await sequelize.sync();   
 
 console.log("✅ Database tables synchronized!"); 
 
