@@ -1,18 +1,38 @@
-const express = require("express");
-const cors = require("cors");
 require("dotenv").config();
 
-const sequelize = require("./config/db"); 
-const User = require("./models/User");                                     
-const EmailVerification = require("./models/EmailVerification"); 
-const { testEmailConnection } = require("./services/emailService");   
-const authRoutes = require("./routes/authRoutes");          
+const express = require("express");
+const session = require("express-session");
+const cors = require("cors");
 
-const app = express();                                          
+const sequelize = require("./config/db");
+const User = require("./models/User");
+const EmailVerification = require("./models/EmailVerification"); 
+const PasswordReset = require("./models/PasswordReset"); 
+const { testEmailConnection } = require("./services/emailService");
+const authRoutes = require("./routes/authRoutes");
+
+const app = express();  
 
 app.use(cors());
-app.use(express.json());  
-app.use("/api/auth", authRoutes);  
+app.use(express.json());
+
+// SESSION MUST COME BEFORE ROUTES
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            maxAge: 1000 * 60 * 60 * 24,
+        },
+    })
+);
+
+// ROUTES AFTER SESSION
+app.use("/api/auth", authRoutes);
+
 app.get("/", (req, res) => {
     res.json({
         message: "Rently backend is running successfully!"
@@ -25,11 +45,13 @@ async function startServer() {
     try {
         await sequelize.authenticate();
 
-        console.log("✅ MySQL database connected successfully!");     
-        await testEmailConnection(); 
-        await sequelize.sync();   
+        console.log("✅ MySQL database connected successfully!");
 
-console.log("✅ Database tables synchronized!"); 
+        await testEmailConnection();
+
+        await sequelize.sync();
+
+        console.log("✅ Database tables synchronized!");
 
         app.listen(PORT, () => {
             console.log(`🚀 Rently backend running on port ${PORT}`);
@@ -41,6 +63,5 @@ console.log("✅ Database tables synchronized!");
     }
 }
 
-startServer();                                               
- 
+startServer(); 
  
