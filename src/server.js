@@ -5,16 +5,34 @@ const session = require("express-session");
 const cors = require("cors");
 
 const sequelize = require("./config/db");
-const User = require("./models/User");
+const User = require("./models/User");        
+const Profile = require("./models/Profile"); 
 const EmailVerification = require("./models/EmailVerification"); 
 const PasswordReset = require("./models/PasswordReset"); 
 const { testEmailConnection } = require("./services/emailService");
-const authRoutes = require("./routes/authRoutes");
+const authRoutes = require("./routes/authRoutes");         
+const profileRoutes = require("./routes/profileRoutes");  
+// USER-PROFILE ASSOCIATION
+User.hasOne(Profile, {
+    foreignKey: "userId",
+    onDelete: "CASCADE",
+});
+
+Profile.belongsTo(User, {
+    foreignKey: "userId", 
+}); 
 
 const app = express();  
 
-app.use(cors());
-app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }) 
+);  
+
+app.use(express.json());  
 
 // SESSION MUST COME BEFORE ROUTES
 app.use(
@@ -31,7 +49,8 @@ app.use(
 );
 
 // ROUTES AFTER SESSION
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);   
+app.use("/api/profile", profileRoutes); 
 
 app.get("/", (req, res) => {
     res.json({
@@ -63,5 +82,5 @@ async function startServer() {
     }
 }
 
-startServer(); 
+startServer();  
  

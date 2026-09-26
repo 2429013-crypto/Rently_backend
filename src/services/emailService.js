@@ -48,10 +48,9 @@ async function sendPasswordResetOTPEmail(email, otp) {
         `,
     });
 }                        
-
-module.exports = { 
-    transporter,                      
-    testEmailConnection,                          
+module.exports = {
+    transporter,
+    testEmailConnection,
     sendOTPEmail,
-    sendPasswordResetOTPEmail,       
-}; 
+    sendPasswordResetOTPEmail,
+};
