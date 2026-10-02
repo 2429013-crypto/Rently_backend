@@ -304,12 +304,17 @@ const login = async (req, res) => {
                 message: "Invalid email or password.",
             });
         } 
+        req.session.userId = user.id;
         req.session.user = {
-    id: user.id,
-    email: user.email,
-    role: user.role,
-     };                                        
-     return res.status(200).json({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        };
+
+        console.log("LOGIN SESSION:", req.session);
+        console.log("LOGIN USER ID:", req.session.userId);
+
+        return res.status(200).json({
             message: "Login successful.",
             user: {
                 id: user.id,
@@ -326,17 +331,20 @@ const login = async (req, res) => {
     }
 }; 
 const getCurrentUser = (req, res) => {
-    if (!req.session.user) {
+    const userId = req.session.userId || req.session.user?.id;
+    if (!userId) {
         return res.status(401).json({
             message: "Not authenticated.",
         });
     }
 
     return res.status(200).json({
-        user: req.session.user,
+        user: req.session.user || { id: userId },
+        userId: userId,
     });
-};  
- const logout = (req, res) => {
+};
+  
+const logout = (req, res) => {
     req.session.destroy((error) => {
         if (error) {
             console.error("Logout error:", error);
@@ -346,13 +354,18 @@ const getCurrentUser = (req, res) => {
             });
         }
 
-        res.clearCookie("connect.sid");
+        res.clearCookie("connect.sid", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/",
+        });
 
         return res.status(200).json({
             message: "Logout successful.",
         });
     });
-};                 
+}; 
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;

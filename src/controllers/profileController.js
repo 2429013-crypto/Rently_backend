@@ -7,14 +7,15 @@ const Profile = require("../models/Profile");
 
 const getProfile = async (req, res) => {
     try {
-        // Check whether user is logged in
-        if (!req.session.user) {
+        console.log("PROFILE SESSION:", req.session);
+        const userId = req.session.userId || req.session.user?.id;
+        console.log("PROFILE USER ID:", userId);
+
+        if (!userId) {
             return res.status(401).json({
                 message: "Not authenticated.",
             });
         }
-
-        const userId = req.session.user.id;
 
         const profile = await Profile.findOne({
             where: { userId },
@@ -49,14 +50,16 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        // Check whether user is logged in
-        if (!req.session.user) {
+        console.log("UPDATE PROFILE SESSION:", req.session);
+        const userId = req.session.userId || req.session.user?.id;
+        console.log("UPDATE PROFILE USER ID:", userId);
+
+        if (!userId) {
             return res.status(401).json({
                 message: "Not authenticated.",
             });
         }
 
-        const userId = req.session.user.id;
 
         const {
             fullName,
